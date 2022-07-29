@@ -4,7 +4,7 @@ from facebook_scraper import get_posts
 
 class TwitterScraper:
     def __init__(self, usernames = [], scrape_level = 1, tweet_limit = 1000):
-        self.domain = "twitter";
+        self.domain = "twitter"
         self.usernames = usernames
         self.scrape_level = scrape_level
         self.tweet_limit = tweet_limit
@@ -35,7 +35,7 @@ class TwitterScraper:
         if get_linked_users:
             for linked in linked_usernames:
                 if linked == username:
-                    continue;
+                    continue
                 self._internal_scrape(linked, False, tweets, linked_usernames, root_username)
                 
         return tweets
@@ -54,7 +54,7 @@ class TwitterScraper:
 
 class FacebookScraper:
     def __init__(self, usernames = None, scrape_level = 1, posts_limit = 1000):
-        self.domain = "facebook";
+        self.domain = "facebook"
         self.usernames = usernames
         self.scrape_level = scrape_level
         self.posts_limit = posts_limit
