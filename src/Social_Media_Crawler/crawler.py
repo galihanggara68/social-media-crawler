@@ -1,7 +1,7 @@
 import re
 
 class Crawler:
-    def __init__(self, search_engine = ISearchEngine, social_media = []):
+    def __init__(self, search_engine, social_media = []):
         self.search_engine = search_engine
         self.social_media = social_media
         self.results = []
