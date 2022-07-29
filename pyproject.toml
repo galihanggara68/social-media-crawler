@@ -1,0 +1,17 @@
+[project]
+name = "Social_Media_Crawler"
+version = "0.0.1"
+authors = [
+  { name="Galih Anggara", email="galihanggara68@gmail.com" },
+]
+description = "Social media crawler including Twitter, Facebook, Instagram, LinkedIn, Tokopedia"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/galihanggara68/social-media-crawler"
+"Bug Tracker" = "https://github.com/galihanggara68/social-media-crawler/issues"
