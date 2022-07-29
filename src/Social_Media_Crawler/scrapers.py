@@ -41,7 +41,7 @@ class TwitterScraper:
         return tweets
         
     def scrape(self, usernames = [], level = 1):
-        if(self.usernames == None):
+        if(len(self.usernames) < 1):
             self.usernames = usernames
         tweets_list = []
         linked_usernames = []
@@ -64,7 +64,7 @@ class FacebookScraper:
         
     def scrape(self, usernames = []):
         fb_posts = []
-        if(self.usernames == None):
+        if(len(self.usernames) < 1):
             self.usernames = usernames
         for username in self.usernames:
             for i, post in enumerate(get_posts(username["username"], pages=3, extra_info=True, cookies="login.txt")):
