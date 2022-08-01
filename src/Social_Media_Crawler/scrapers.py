@@ -1,6 +1,54 @@
 import pandas as pd
 import snscrape.modules.twitter as sntwitter
 from facebook_scraper import get_posts
+import instaloader
+
+class InstagramScraper:
+    def __init__(self, usernames = [], login_username = "", login_password = "", scrape_level = 1, posts_limit = 10):
+        self.domain = "instagram"
+        self.usernames = usernames
+        self.scrape_level = scrape_level
+        self.posts_limit = posts_limit
+        self.instaloader = instaloader.Instaloader()
+        self.login_username = login_username
+        self.login_password = login_password
+
+    def get_domain(self):
+        return self.domain
+
+    def _internal_scrape(self, username, get_linked_users, user_posts, linked_usernames = [], root_username = None):
+        profile = instaloader.Profile.from_username(self.instaloader.context, username)
+        posts = []
+        for i, post in enumerate(profile.get_posts()):
+            if i>self.posts_limit: #number of tweets you want to scrape
+                break
+            if get_linked_users:
+                if(len(post.tagged_users) > 0 or len(post.tagged_users) > 0):
+                    mentioned_users = post.tagged_users + post.caption_mentions
+                    for luname in mentioned_users:
+                        if luname not in linked_usernames and luname.strip() != username:
+                            print(f"Added {luname}")
+                            linked_usernames.append(luname.strip())
+            posts.append({"caption": post.caption, "shortcode": post.shortcode, "date": post.date, "url": post.url, "video_url": post.video_url, "caption_hashtags": post.caption_hashtags, "likes": post.likes, "comments": post.comments})
+        user_posts.append([profile.username, profile.biography, profile.full_name, profile.followers, profile.followees, posts])
+
+        if get_linked_users:
+            for linked in linked_usernames:
+                if linked == username:
+                    continue
+                self._internal_scrape(linked, False, user_posts, linked_usernames, root_username)
+
+    def scrape(self, usernames = []):
+        if(len(self.usernames) < 1):
+            self.usernames = usernames
+        self.instaloader.login(self.login_username, self.login_password)
+        arr_usernames = [x["username"] for x in self.usernames]
+        user_posts = []
+        for username in arr_usernames:
+            self._internal_scrape(username, True, user_posts, [], username)
+        
+        pdf = pd.DataFrame(user_posts, columns=["username", "bio", "full_name", "followers", "followes", "posts"])
+        return pdf
 
 class TwitterScraper:
     def __init__(self, usernames = [], scrape_level = 1, tweet_limit = 1000):
@@ -44,12 +92,11 @@ class TwitterScraper:
         if(len(self.usernames) < 1):
             self.usernames = usernames
         tweets_list = []
-        linked_usernames = []
         arr_usernames = [x["username"] for x in self.usernames]
         for username in arr_usernames:
-            self._internal_scrape(username, True, tweets_list, linked_usernames, username)
-        #tdf = pd.DataFrame(tweets_list, columns=["url", "id", "date", "content", "replyCount", "retweetCount", "likeCount", "quotedTweet", "user", "inReplyToUser", "mentionedUsers", "coordinates", "place", "hashtags", "cashtags"])
-        return tweets_list
+            self._internal_scrape(username, True, tweets_list, [], username)
+        tdf = pd.DataFrame(tweets_list, columns=["url", "id", "date", "content", "replyCount", "retweetCount", "likeCount", "quotedTweet", "user", "inReplyToUser", "mentionedUsers", "coordinates", "place", "hashtags", "cashtags"])
+        return tdf
 
 
 class FacebookScraper:
